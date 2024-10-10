@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Handwriting Digit Recognition</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Handwriting Digit Recognition</h1>
+        <p>Upload a handwritten digit image (PNG or JPEG):</p>
+        <form id="upload-form" enctype="multipart/form-data">
+            <input type="file" id="image" name="image" accept=".png, .jpg, .jpeg" required>
+            <button type="submit">Predict</button>
+        </form>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData();
+            const fileInput = document.getElementById('image');
+            formData.append('image', fileInput.files[0]);
+
+            const response = await fetch('/predict', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const data = await response.json();
+            const resultDiv = document.getElementById('result');
+            if (response.ok) {
+                resultDiv.innerHTML = `<h2>Predicted Digit: ${data.digit}</h2>`;
+            } else {
+                resultDiv.innerHTML = `<h2>Error: ${data.error}</h2>`;
+            }
+        });
+    </script>
+</body>
+</html>
